@@ -20,6 +20,7 @@ async function main() {
       restart,
       targets,
       decompressTarget,
+      commands,
     } = settings;
 
     let fileSourcePaths = [];
@@ -67,7 +68,10 @@ async function main() {
           }
         }
       }
-
+      for (const command of commands) {
+        core.debug(`Processing command ${command}`);
+        await runCommand(serverId, command)
+      }
       if (restart) await restartServer(serverId);
     }
 
@@ -90,6 +94,7 @@ async function getSettings() {
   let targetPath = getInput("target");
   let serverIdInput = getInput("server-id");
   let serverIds = getMultilineInput("server-ids");
+  let commands = getMultilineInput("commands");
 
   // Debug print out all the inputs
   core.debug(`restart: ${restart}`);
@@ -98,6 +103,7 @@ async function getSettings() {
   core.debug(`target: ${targetPath}`);
   core.debug(`server-id: ${serverIdInput}`);
   core.debug(`server-ids: ${serverIds}`);
+  core.debug(`commands: ${commands}`)
 
   const config = await readConfigFile();
 
@@ -108,6 +114,7 @@ async function getSettings() {
   targetPath = targetPath || config.target || "";
   serverIdInput = serverIdInput || config.server || "";
   serverIds = serverIds.length ? serverIds : config.servers || [];
+  commands = commands.length ? commands : config.commands || [];
 
   const targets = config.targets || [];
 
@@ -120,6 +127,7 @@ async function getSettings() {
   core.debug(`target: ${targetPath}`);
   core.debug(`server-id: ${serverIdInput}`);
   core.debug(`server-ids: ${serverIds}`);
+  core.debug(`commands: ${commands}`)
 
   if (
     !sourcePath &&
@@ -148,6 +156,7 @@ async function getSettings() {
     targets,
     decompressTarget,
     followSymbolicLinks,
+    commands,
   };
 }
 
@@ -250,6 +259,12 @@ async function uploadFile(serverId, targetFile, buffer) {
 async function restartServer(serverId) {
   await axios.post(`/api/client/servers/${serverId}/power`, {
     signal: "restart",
+  });
+}
+
+async function runCommand(serverId, command) {
+  await axios.post(`/api/client/servers/${serverId}/command`, {
+    command: command,
   });
 }
 

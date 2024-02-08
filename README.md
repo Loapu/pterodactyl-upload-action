@@ -21,6 +21,7 @@ You have to create a client api key in the pterodactyl panel. You can do this in
 6. `sources`: Source files to be uploaded (multiline).
 7. `target`: Destination of the file on the server. Can be a file name (for a single source) or a directory name ending with a slash (for multiple files).
 8. `proxy`: Proxy to be used for upload (username:password@host:port).
+9. `commands`: Commands to be ran after upload.
 
 All file inputs support glob patterns.
 
@@ -52,6 +53,9 @@ jobs:
           # restart: true
           # If you want to decompress the files after successful upload
           # decompress-target: true
+          # If you want to run commands after successful upload
+          # commands: |
+          #   say Hello World
 ```
 
 ## File Decompression

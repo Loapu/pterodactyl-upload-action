@@ -36,6 +36,9 @@ inputs:
   follow-symbolic-links:
     description: "Indicates whether to follow symbolic links"
     default: true
+  commands:
+    description: "The commands to run afterward"
+    required: false
 runs:
   using: "node16"
   main: "dist/index.js"
